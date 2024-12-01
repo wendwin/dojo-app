@@ -1,3 +1,4 @@
+import 'package:dojo/home.dart';
 import 'package:dojo/register.dart';
 import 'package:flutter/material.dart';
 import 'package:dojo/services/login_service.dart';
@@ -127,21 +128,18 @@ class Login extends StatelessWidget {
                                     final email = emailController.text.trim();
                                     final password = passwordController.text;
 
-                                    // Panggil service login
                                     final user = await authService.login(
                                         email, password);
 
                                     if (user != null) {
-                                      // Login berhasil
                                       print(
                                           'Login successful! Welcome ${user.nama}');
-                                      // Navigasi ke halaman lain atau simpan data user ke state
-                                      // Navigator.pushReplacement(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) => Home()));
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Home()));
                                     } else {
-                                      // Login gagal
                                       print('Login failed');
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
