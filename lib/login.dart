@@ -1,3 +1,4 @@
+import 'package:dojo/register.dart';
 import 'package:flutter/material.dart';
 import 'package:dojo/services/login_service.dart';
 
@@ -172,11 +173,11 @@ class Login extends StatelessWidget {
                                   style: TextStyle(color: Colors.white)),
                               GestureDetector(
                                 onTap: () {
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //         // builder: (context) => Register()));
-                                  //         builder: (context) => Register()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          // builder: (context) => Register()));
+                                          builder: (context) => Register()));
                                 },
                                 child: const Text(' Daftar',
                                     style: TextStyle(
