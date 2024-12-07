@@ -1,5 +1,8 @@
+import 'package:dojo/models/org_model.dart';
+import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:dojo/services/shared_prefs_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,15 +13,41 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
+  String? userName;
+  List<Organization>? organizations;
 
-  final List<Widget> _pages = [
-    const PresensiPage(),
-    const LatihanPage(),
-    const ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadUserName();
+    loadOrganizations();
+  }
+
+  Future<void> loadUserName() async {
+    final name = await getUserData(); // Ambil nama dari SharedPreferences
+    setState(() {
+      userName = name;
+    });
+  }
+
+  Future<void> loadOrganizations() async {
+    OrganizationService service = OrganizationService();
+    final orgs = await service.fetchOrganizations();
+    setState(() {
+      organizations = orgs;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      PresensiPage(
+        userName: userName,
+      ),
+      const LatihanPage(),
+      ProfilePage(organizations: organizations),
+    ];
+
     return MaterialApp(
       home: Scaffold(
         backgroundColor: const Color(0xFF141F33),
@@ -60,7 +89,8 @@ class _HomeState extends State<Home> {
 }
 
 class PresensiPage extends StatelessWidget {
-  const PresensiPage({super.key});
+  final String? userName;
+  const PresensiPage({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +106,7 @@ class PresensiPage extends StatelessWidget {
         ),
       ),
       Container(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
         child: Column(
           children: [
             Row(children: [
@@ -88,15 +118,22 @@ class PresensiPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
-              const SizedBox(width: 15),
-              const Text('Alex Supriadi',
-                  style: TextStyle(color: Colors.white)),
+              const SizedBox(width: 10),
+              Center(
+                child: userName != null
+                    ? Text('$userName',
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white))
+                    : const CircularProgressIndicator(),
+              ),
+              // const Text('Alex Supriadi',
+              //     style: TextStyle(color: Colors.white)),
             ]),
             const SizedBox(height: 40),
             Container(
               padding: const EdgeInsets.all(15),
               width: double.infinity,
-              height: 110,
+              height: 135,
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(15),
@@ -109,7 +146,11 @@ class PresensiPage extends StatelessWidget {
                           fontSize: 24,
                           fontFamily: GoogleFonts.bebasNeue().fontFamily,
                           letterSpacing: 1.5)),
-                  const SizedBox(height: 10),
+                  // const SizedBox(height: 5),
+                  const Text(
+                    'Satria Monoreh',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,7 +163,7 @@ class PresensiPage extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(0, 40),
+                          minimumSize: const Size(60, 35),
                           backgroundColor: const Color(0xFFA3EC3D),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
@@ -133,21 +174,6 @@ class PresensiPage extends StatelessWidget {
                               color: Colors.black, fontWeight: FontWeight.w500),
                         ),
                       )
-                      // Container(
-                      //   width: 70,
-                      //   height: 30,
-                      //   decoration: BoxDecoration(
-                      //     color: Color(0xFFA3EC3D),
-                      //     borderRadius: BorderRadius.circular(5),
-                      //   ),
-                      //   child: Center(
-                      //     child: Text(
-                      //       'Baru',
-                      //       style: TextStyle(
-                      //           color: Colors.white, fontWeight: FontWeight.w500),
-                      //     ),
-                      //   ),
-                      // )
                     ],
                   )
                 ],
@@ -268,14 +294,61 @@ class LatihanPage extends StatelessWidget {
 }
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final List<Organization>? organizations;
+
+  const ProfilePage({super.key, required this.organizations});
+  // const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Profile',
-        style: TextStyle(fontSize: 24, color: Colors.white),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
+      color: const Color(0xFF141F33),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Profile',
+            style: TextStyle(fontSize: 24, color: Colors.white),
+          ),
+          const SizedBox(height: 20),
+          if (organizations == null) ...[
+            // Text('Gagal Fetch')
+            const Center(child: CircularProgressIndicator()),
+          ] else if (organizations!.isEmpty) ...[
+            const Text(
+              'No organizations found.',
+              style: TextStyle(color: Colors.white),
+            ),
+          ] else ...[
+            const Text(
+              'Organizations:',
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: organizations!.length,
+                itemBuilder: (context, index) {
+                  final org = organizations![index];
+                  return Card(
+                    color: Colors.grey.withOpacity(0.3),
+                    child: ListTile(
+                      title: Text(
+                        org.name,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        'Pelatih: ${org.user_creator.name}',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

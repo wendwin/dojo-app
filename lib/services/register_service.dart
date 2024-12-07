@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 
 class RegisterService {
   final String baseUrl = 'http://127.0.0.1:5000/api/users';
+  // final String baseUrl = 'http://192.168.100.74:5000/api/users';
 
   Future<bool> registerUser(String name, String email, String password) async {
     final url = Uri.parse('$baseUrl/register'); // Ubah endpoint sesuai API-mu

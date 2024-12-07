@@ -133,7 +133,7 @@ class Login extends StatelessWidget {
 
                                     if (user != null) {
                                       print(
-                                          'Login successful! Welcome ${user.nama}');
+                                          'Login successful! Welcome ${user.name}');
                                       Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
