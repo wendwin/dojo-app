@@ -1,5 +1,5 @@
 // import 'package:dojo/models/org_model.dart';
-import 'package:dojo/screen/org_list.dart';
+import 'package:dojo/screens/org_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

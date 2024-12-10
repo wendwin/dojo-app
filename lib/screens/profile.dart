@@ -72,7 +72,7 @@ class ProfilePage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => _logoutUser(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Red color for logout
+                backgroundColor: Colors.red,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
