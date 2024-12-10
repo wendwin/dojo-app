@@ -15,32 +15,30 @@ class OrganizationService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         if (response.body.isNotEmpty) {
           final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-          // Pastikan key 'data' ada
           if (responseData.containsKey('data') &&
-              responseData['data'] != null) {
+              responseData['data'] is List) {
             final List<dynamic> data = responseData['data'];
             return data.map((org) => Organization.fromJson(org)).toList();
           } else {
-            print('Key "data" tidak ditemukan atau isinya null');
-            return null;
+            print('Key "data" tidak ditemukan atau bukan daftar');
+            return [];
           }
         } else {
           print('Response body kosong');
-          return null;
+          return [];
         }
       } else {
         print('Gagal mengambil organisasi: ${response.statusCode}');
-        return null;
+        return [];
       }
     } catch (e) {
-      print('Error disini: $e');
-      return null;
+      // Tangani error pada jaringan atau lainnya
+      print('Terjadi error saat mengambil data organisasi: $e');
+      return [];
     }
   }
 }

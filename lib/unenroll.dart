@@ -1,5 +1,11 @@
+import 'package:dojo/screen/latihan.dart';
+import 'package:dojo/screen/presensi_unenroll.dart';
+import 'package:dojo/screen/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
+import 'package:dojo/models/org_model.dart';
+import 'package:dojo/services/shared_prefs_service.dart';
+import 'package:dojo/services/org_service.dart';
 
 class Unenroll extends StatefulWidget {
   const Unenroll({super.key});
@@ -10,15 +16,45 @@ class Unenroll extends StatefulWidget {
 
 class _UnenrollState extends State<Unenroll> {
   int _currentIndex = 0;
+  String? userName;
+  List<Organization>? organizations;
 
-  final List<Widget> _pages = [
-    const PresensiPage(),
-    const LatihanPage(),
-    const ProfilePage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadUserName();
+    loadOrganizations();
+  }
+
+  Future<void> loadUserName() async {
+    final userData = await getUserData();
+    setState(() {
+      userName = userData['userName'];
+    });
+  }
+
+  Future<void> loadOrganizations() async {
+    OrganizationService service = OrganizationService();
+    final orgs = await service.fetchOrganizations();
+    if (orgs != null && orgs.isNotEmpty) {
+      print('Jumlah organisasi ditemukan: ${orgs.length}');
+    } else {
+      print('Tidak ada organisasi ditemukan');
+    }
+    setState(() {
+      organizations = orgs;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      UnenrollPresensiPage(
+        userName: userName,
+      ),
+      const LatihanPage(),
+      ProfilePage(organizations: organizations),
+    ];
     return MaterialApp(
       home: Scaffold(
         backgroundColor: const Color(0xFF141F33),
@@ -54,181 +90,6 @@ class _UnenrollState extends State<Unenroll> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class PresensiPage extends StatelessWidget {
-  const PresensiPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: [
-      Positioned(
-        top: 0,
-        left: 0,
-        child: Image.asset(
-          'assets/images/element-base.png',
-          fit: BoxFit.cover, // Mengisi seluruh layar dengan gambar
-          // height: MediaQuery.of(context).size.height *
-          //     0.5, // Menyesuaikan ukuran gambar (hanya setengah layar)
-        ),
-      ),
-      Container(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          children: [
-            Row(children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-              ),
-              const SizedBox(width: 15),
-              const Text('Alex Supriadi',
-                  style: TextStyle(color: Colors.white)),
-            ]),
-            const SizedBox(height: 40),
-            Container(
-              padding: const EdgeInsets.all(15),
-              width: double.infinity,
-              height: 110,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  Text('Presensi',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontFamily: GoogleFonts.bebasNeue().fontFamily,
-                          letterSpacing: 1.5)),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Anda belum mengikuti kelas Dojo',
-                        style: TextStyle(color: Colors.yellow[400]),
-                      ),
-                      const SizedBox(width: 5),
-                      Icon(Icons.warning_amber_rounded,
-                          color: Colors.yellow[400]),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            Row(children: [
-              const Icon(Icons.more_time, color: Colors.white),
-              const SizedBox(width: 5),
-              Text(
-                'Riwayat',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    letterSpacing: 1.5,
-                    fontFamily: GoogleFonts.bebasNeue().fontFamily),
-              )
-            ]),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(15),
-              width: double.infinity,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'Tanggal',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Text(
-                          'Status',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Belum ada riwayat presensi',
-                          style: TextStyle(color: Colors.white)),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 180),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFA3EC3D),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Gabung Kelas',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500)),
-              ),
-            )
-          ],
-        ),
-      ),
-    ]);
-  }
-}
-
-class LatihanPage extends StatelessWidget {
-  const LatihanPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Latihan',
-        style: TextStyle(fontSize: 24, color: Colors.white),
-      ),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Profile',
-        style: TextStyle(fontSize: 24, color: Colors.white),
       ),
     );
   }

@@ -1,5 +1,7 @@
+// import 'package:dojo/home.dart';
 import 'package:dojo/home.dart';
 import 'package:dojo/register.dart';
+import 'package:dojo/unenroll.dart';
 import 'package:flutter/material.dart';
 import 'package:dojo/services/login_service.dart';
 
@@ -9,7 +11,7 @@ class Login extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final Loginservice authService = Loginservice();
+  final LoginService authService = LoginService();
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,8 @@ class Login extends StatelessWidget {
             left: 0,
             right: 0,
             child: Image.asset(
-              'assets/images/element.png', // Ganti dengan path gambar Anda
-              fit: BoxFit.cover, // Mengisi seluruh layar dengan gambar
-              // height: MediaQuery.of(context).size.height *
-              //     0.5, // Menyesuaikan ukuran gambar (hanya setengah layar)
+              'assets/images/element.png',
+              fit: BoxFit.cover,
             ),
           ),
           Center(
@@ -35,28 +35,23 @@ class Login extends StatelessWidget {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center, // Teks "Masuk" di tengah
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Teks "Masuk" di tengah
                     const Text(
                       'Masuk',
                       style: TextStyle(color: Colors.white, fontSize: 24),
                     ),
-                    const SizedBox(height: 30), // Jarak setelah teks "Masuk"
+                    const SizedBox(height: 30),
 
                     // Form Input
                     Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Label di kiri atas
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Label Email
                         const Text(
                           'Email',
                           style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 10),
-                        // Input Email
                         TextFormField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -76,20 +71,17 @@ class Login extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 20),
-
-                        // Label Password
                         const Text(
                           'Password',
                           style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 10),
-                        // Input Password
                         TextFormField(
                           controller: passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFCCCCCC), // Warna abu-abu
+                            fillColor: const Color(0xFFCCCCCC),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -129,26 +121,78 @@ class Login extends StatelessWidget {
                                     final password = passwordController.text;
 
                                     final user = await authService.login(
-                                        email, password);
+                                        email, password, context);
 
                                     if (user != null) {
                                       print(
                                           'Login successful! Welcome ${user.name}');
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Home()));
+                                      print(
+                                          'Organizations: ${user.organizations}');
+                                      print('OrgMembers: ${user.orgMembers}');
+
+                                      final hasOrganizations =
+                                          user.organizations!.isNotEmpty;
+                                      final hasOrgMembers =
+                                          user.orgMembers!.isNotEmpty;
+
+                                      if (hasOrganizations && hasOrgMembers) {
+                                        print('satu');
+                                        print(hasOrganizations);
+                                        print(hasOrgMembers);
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => Home()));
+                                      } else if (hasOrgMembers &&
+                                          !hasOrganizations) {
+                                        print('dua');
+                                        print(hasOrganizations);
+                                        print(hasOrgMembers);
+                                        // Jika user hanya menjadi anggota organisasi, arahkan ke Unenroll
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const Home()));
+                                      } else {
+                                        print('tiga');
+                                        print(hasOrganizations);
+                                        print(hasOrgMembers);
+                                        // Jika user tidak memiliki organisasi dan tidak menjadi anggota, arahkan ke Unenroll
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const Unenroll()));
+                                      }
                                     } else {
                                       print('Login failed');
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Invalid email or password')),
+                                        SnackBar(
+                                          content: const Row(
+                                            children: [
+                                              Icon(Icons.warning_amber_rounded,
+                                                  color: Colors.white),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                'Gagal Masuk',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 229, 58, 43),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: const EdgeInsets.all(16),
+                                          duration: const Duration(seconds: 2),
+                                        ),
                                       );
-
-                                      passwordController.clear();
                                     }
                                   }
                                 },

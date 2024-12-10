@@ -1,8 +1,18 @@
+import 'package:dojo/home.dart';
+import 'package:dojo/login.dart';
 import 'package:dojo/splash_screen.dart';
+import 'package:dojo/unenroll.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(
+    home: const SplashScreen(),
+    routes: {
+      '/home': (context) => const Home(),
+      '/login': (context) => Login(),
+      '/select-org': (context) => const Unenroll(),
+    },
+  ));
 }
 
 class MyApp extends StatelessWidget {
