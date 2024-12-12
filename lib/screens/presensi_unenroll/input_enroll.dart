@@ -40,7 +40,7 @@ class InputEnrollPage extends StatelessWidget {
                           decoration: InputDecoration(
                     // labelText: 'Masukan Kode Enroll',
                     hintText: 'Kode enroll',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: const Color.fromARGB(255, 211, 211, 211),
                     border: OutlineInputBorder(

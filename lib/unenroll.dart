@@ -49,17 +49,17 @@ class _UnenrollState extends State<Unenroll> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       UnenrollPresensi(
         userName: userName,
       ),
       const LatihanPage(),
-      ProfilePage(organizations: organizations),
+      const ProfilePage(),
     ];
     return MaterialApp(
       home: Scaffold(
         backgroundColor: const Color(0xFF141F33),
-        body: _pages[_currentIndex],
+        body: pages[_currentIndex],
         bottomNavigationBar: BottomNavBar(
           currentIndex: _currentIndex,
           onTap: (index) {
