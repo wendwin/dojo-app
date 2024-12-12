@@ -3,7 +3,7 @@ import 'package:dojo/models/org_model.dart';
 import 'package:http/http.dart' as http;
 
 class OrganizationService {
-  final String baseUrl = 'http://127.0.0.1:5000/api';
+  final String baseUrl = 'http://192.168.18.248:5000/api';
   // final String baseUrl = 'http://192.168.100.74:5000/api';
 
   Future<List<Organization>?> fetchOrganizations() async {

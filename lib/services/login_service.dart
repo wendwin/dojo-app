@@ -5,7 +5,7 @@ import 'package:dojo/models/user_model.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
 
 class LoginService {
-  final String baseUrl = 'http://127.0.0.1:5000/api/users';
+  final String baseUrl = 'http://192.168.18.248:5000/api/users';
 
   Future<User?> login(
       String email, String password, BuildContext context) async {

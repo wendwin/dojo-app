@@ -1,7 +1,7 @@
 import 'package:dojo/components/bottom_nav.dart';
 import 'package:dojo/models/org_model.dart';
 import 'package:dojo/screens/latihan.dart';
-import 'package:dojo/screens/presensi.dart';
+import 'package:dojo/screens/presensi_enroll/presensi.dart';
 import 'package:dojo/screens/profile.dart';
 import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';

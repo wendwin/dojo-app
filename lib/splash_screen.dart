@@ -1,4 +1,5 @@
 // import 'package:dojo/services/shared_prefs_service.dart';
+import 'package:dojo/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:dojo/login.dart';
@@ -16,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/login');
+      navigateBasedOnLoginStatus(context);
     });
   }
 
@@ -43,32 +44,13 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-// Fungsi untuk memeriksa status login
-// Future<void> checkLoginStatus(BuildContext context) async {
-//   final userData =
-//       await getUserData(); // Mendapatkan data pengguna dari SharedPreferences
-
-//   // Cek apakah userId ada (menandakan sudah login)
-//   if (userData['userId'] != null) {
-//     final org =
-//         await getUserOrganization(); // Mendapatkan informasi organisasi pengguna
-//     final orgMembers =
-//         userData['orgMembers']; // Mendapatkan informasi orgMembers pengguna
-
-//     // Pastikan orgMembers dan org tidak null
-//     final hasOrg = org != null && org.isNotEmpty;
-//     final hasOrgMembers = orgMembers != null && orgMembers.isNotEmpty;
-
-//     // Cek kondisi untuk navigasi
-//     if (hasOrg || hasOrgMembers) {
-//       // Jika ada org atau orgMembers (dianggap sudah memiliki organisasi)
-//       Navigator.pushReplacementNamed(context, '/home');
-//     } else {
-//       // Jika org dan orgMembers kosong, arahkan ke halaman select-org
-//       Navigator.pushReplacementNamed(context, '/select-org');
-//     }
-//   } else {
-//     // Jika belum login, arahkan ke halaman login
-//     Navigator.pushReplacementNamed(context, '/login');
-//   }
-// }
+Future<void> navigateBasedOnLoginStatus(BuildContext context) async {
+  bool isLoggedIn = await checkLoginStatus();
+  if (isLoggedIn) {
+    print('Login status: sudah login');
+    Navigator.pushReplacementNamed(context, '/home');
+  } else {
+    print('Login status: belum login');
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+}

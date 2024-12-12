@@ -1,14 +1,17 @@
 // import 'package:dojo/models/org_model.dart';
-import 'package:dojo/screens/org_list.dart';
+import 'package:dojo/screens/presensi_unenroll/org_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class UnenrollPresensiPage extends StatelessWidget {
+class UnenrollPresensi extends StatelessWidget {
   final String? userName;
-  const UnenrollPresensiPage({super.key, required this.userName});
+  const UnenrollPresensi({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    // final screenWidth = MediaQuery.of(context).size.width;
+
     return Stack(children: [
       Positioned(
         top: 0,
@@ -131,7 +134,7 @@ class UnenrollPresensiPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 150),
+            SizedBox(height: screenHeight * 0.32),
             SizedBox(
               width: double.infinity,
               height: 50,

@@ -1,6 +1,6 @@
 import 'package:dojo/components/bottom_nav.dart';
 import 'package:dojo/screens/latihan.dart';
-import 'package:dojo/screens/presensi_unenroll.dart';
+import 'package:dojo/screens/presensi_unenroll/unenroll_presensi.dart';
 import 'package:dojo/screens/profile.dart';
 import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -50,7 +50,7 @@ class _UnenrollState extends State<Unenroll> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      UnenrollPresensiPage(
+      UnenrollPresensi(
         userName: userName,
       ),
       const LatihanPage(),

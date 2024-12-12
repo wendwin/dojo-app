@@ -10,8 +10,6 @@ class ProfilePage extends StatelessWidget {
 
   Future<void> _logoutUser(BuildContext context) async {
     await logoutUser();
-    print("User data cleared: userId and userName have been removed.");
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Login()),
