@@ -1,40 +1,27 @@
-import 'package:dojo/models/org_model.dart';
 import 'package:dojo/screens/presensi_enroll/presensi.dart';
-// import 'package:dojo/screens/presensi_enroll/presensi.dart';
+import 'package:dojo/services/org_service.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
-import 'package:dojo/services/org_service.dart'; // Import service
 
-class InputEnrollPage extends StatefulWidget {
-  final Organization? org;
-  final List<dynamic>? orgMembers;
-  final List<dynamic>? organizations;
-
-  const InputEnrollPage(
-      {super.key, this.org, this.orgMembers, this.organizations});
+class CreateOrganization extends StatefulWidget {
+  const CreateOrganization({super.key});
 
   @override
-  State<InputEnrollPage> createState() => _InputEnrollPageState();
+  State<CreateOrganization> createState() => _CreateOrganizationState();
 }
 
-class _InputEnrollPageState extends State<InputEnrollPage> {
+class _CreateOrganizationState extends State<CreateOrganization> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _enrollCodeController = TextEditingController();
-  final OrganizationJoinService _organizationJoinService =
-      OrganizationJoinService(); // Ganti baseUrl sesuai API Anda
+  final CreateOrganizationService _createOrganizationService =
+      CreateOrganizationService();
 
   bool _isLoading = false;
 
-  Future<Map<String, dynamic>> _fetchOrgData() async {
-    final userData = await getUserData();
-    return {
-      'org_members': userData['org_members'] ?? [],
-      'organizations': userData['organizations'] ?? [],
-    };
-  }
-
   @override
   void dispose() {
+    _nameController.dispose();
     _enrollCodeController.dispose();
     super.dispose();
   }
@@ -42,29 +29,30 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Tampilkan indikator loading
+        _isLoading = true;
       });
-
-      final enrollCode = _enrollCodeController.text;
 
       try {
         final userData = await getUserData();
         final userId = userData['id'] ?? '';
-        final userName = userData['name'];
+        final userName = userData['name'] ?? '';
+        final name = _nameController.text.trim();
+        final enrollCode = _enrollCodeController.text.trim();
 
         if (userId == null) {
           throw Exception("User ID tidak valid");
         }
 
-        final isSuccess = await _organizationJoinService.joinOrganization(
-          userId,
+        final success = await CreateOrganizationService().createOrganization(
+          name,
           enrollCode,
+          userId,
         );
 
-        if (isSuccess) {
+        if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Berhasil bergabung ke organisasi'),
+              content: Text('Berhasil mendaftarkan organisasi!'),
               duration: Duration(seconds: 2),
               backgroundColor: Colors.green,
             ),
@@ -73,7 +61,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
           final userId = (userData['id']?.toString() ?? '');
 
           final updatedUserData =
-              await _organizationJoinService.fetchUserData(userId);
+              await _createOrganizationService.fetchUserData(userId);
 
           await saveUserData(updatedUserData, userData['token']);
 
@@ -89,22 +77,27 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
                           organizations: updatedUserData['organizations'] ?? [],
                         ))); // Sesuaikan '/home' dengan route halaman Anda
           });
+          // Reset form setelah berhasil
+          // _formKey.currentState!.reset();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Gagal bergabung ke organisasi'),
-              duration: Duration(seconds: 2),
+              content: Text('Gagal mendaftarkan organisasi!'),
               backgroundColor: Colors.red,
             ),
           );
         }
       } catch (e) {
+        print('Exception: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Terjadi kesalahan: $e')),
+          const SnackBar(
+            content: Text('Gagal mendaftarkan organisasi!'),
+            backgroundColor: Colors.red,
+          ),
         );
       } finally {
         setState(() {
-          _isLoading = false; // Sembunyikan indikator loading
+          _isLoading = false;
         });
       }
     }
@@ -139,7 +132,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
               Container(
                 padding: const EdgeInsets.all(15),
                 width: double.infinity,
-                height: 140,
+                height: 200,
                 decoration: BoxDecoration(
                   color: Colors.grey.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(15),
@@ -153,27 +146,53 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
                     const SizedBox(height: 15),
                     Form(
                       key: _formKey,
-                      child: TextFormField(
-                        controller: _enrollCodeController,
-                        decoration: InputDecoration(
-                          hintText: 'Kode enroll',
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          filled: true,
-                          fillColor: const Color.fromARGB(255, 211, 211, 211),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              hintText: 'Nama Organisasi',
+                              hintStyle: const TextStyle(color: Colors.grey),
+                              filled: true,
+                              fillColor:
+                                  const Color.fromARGB(255, 211, 211, 211),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Kode enroll tidak boleh kosong';
+                              }
+                              if (value.length < 5) {
+                                return 'Kode enroll harus minimal 5 karakter';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Kode enroll tidak boleh kosong';
-                          }
-                          if (value.length < 5) {
-                            return 'Kode enroll harus minimal 5 karakter';
-                          }
-                          return null;
-                        },
+                          const SizedBox(height: 15),
+                          TextFormField(
+                              controller: _enrollCodeController,
+                              decoration: InputDecoration(
+                                hintText: 'Kode Enroll',
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                filled: true,
+                                fillColor:
+                                    const Color.fromARGB(255, 211, 211, 211),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Kode enroll tidak boleh kosong';
+                                }
+                                if (value.length < 5) {}
+                                return null;
+                              })
+                        ],
                       ),
                     ),
                   ],

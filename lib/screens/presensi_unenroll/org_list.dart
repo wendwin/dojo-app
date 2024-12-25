@@ -1,5 +1,6 @@
-import 'package:dojo/enroll.dart';
+// import 'package:dojo/enroll.dart';
 import 'package:dojo/models/org_model.dart';
+import 'package:dojo/screens/presensi_unenroll/input_enroll.dart';
 // import 'package:dojo/screen/presensi_unenroll.dart';
 // import 'package:dojo/screen/profile.dart';
 import 'package:dojo/services/org_service.dart';
@@ -19,20 +20,30 @@ class _OrganizationListState extends State<OrganizationList> {
   // int _currentIndex = 0;
   String? userName;
   List<Organization>? organizations;
+  // Future<Map<String, dynamic>>? _orgDataFuture;
 
   @override
   void initState() {
     super.initState();
     loadUserName();
     loadOrganizations();
+    // _orgDataFuture = _fetchOrgData();
   }
 
   Future<void> loadUserName() async {
     final userData = await getUserData();
     setState(() {
-      userName = userData['userName'];
+      userName = userData['name'];
     });
   }
+
+  // Future<Map<String, dynamic>> _fetchOrgData() async {
+  //   final userData = await getUserData(); // Ambil data user
+  //   return {
+  //     'org_members': userData['org_members'] ?? [],
+  //     'organizations': userData['organizations'] ?? [],
+  //   };
+  // }
 
   Future<void> loadOrganizations() async {
     OrganizationService service = OrganizationService();
@@ -50,6 +61,16 @@ class _OrganizationListState extends State<OrganizationList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: const Text('Kontingen'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       backgroundColor: const Color(0xFF141F33),
       body: Container(
         padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
@@ -57,14 +78,6 @@ class _OrganizationListState extends State<OrganizationList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-              child: const Text(
-                'Pilih Kontingen ',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 10),
             if (organizations == null) ...[
               // Text('Gagal Fetch')
               const Center(child: CircularProgressIndicator()),
@@ -85,7 +98,7 @@ class _OrganizationListState extends State<OrganizationList> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => InputEnroll(
+                            builder: (context) => InputEnrollPage(
                               org: org,
                             ),
                           ),

@@ -1,7 +1,7 @@
 import 'package:dojo/home.dart';
 import 'package:dojo/login.dart';
 import 'package:dojo/splash_screen.dart';
-import 'package:dojo/unenroll.dart';
+// import 'package:dojo/unenroll.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,7 +10,7 @@ void main() {
     routes: {
       '/home': (context) => const Home(),
       '/login': (context) => Login(),
-      '/select-org': (context) => const Unenroll(),
+      // '/select-org': (context) => const Unenroll(),
     },
   ));
 }

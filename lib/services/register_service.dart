@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RegisterService {
-  final String baseUrl = 'http://192.168.18.248:5000/api/users';
-  // final String baseUrl = 'http://192.168.100.74:5000/api/users';
+  final String baseUrl = 'http://localhost:5000/api/users';
 
   Future<bool> registerUser(String name, String email, String password) async {
-    final url = Uri.parse('$baseUrl/register'); // Ubah endpoint sesuai API-mu
+    final url = Uri.parse('$baseUrl/register');
 
     try {
       final response = await http.post(

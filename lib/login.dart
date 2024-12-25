@@ -1,7 +1,7 @@
 // import 'package:dojo/home.dart';
 import 'package:dojo/home.dart';
 import 'package:dojo/register.dart';
-import 'package:dojo/unenroll.dart';
+// import 'package:dojo/unenroll.dart';
 import 'package:flutter/material.dart';
 import 'package:dojo/services/login_service.dart';
 
@@ -127,45 +127,46 @@ class Login extends StatelessWidget {
                                       print(
                                           'Login successful! Welcome ${user.name}');
                                       print(
-                                          'Organizations: ${user.organizations}');
-                                      print('OrgMembers: ${user.orgMembers}');
+                                          'Organizations (login): ${user.organizations}');
+                                      print(
+                                          'OrgMembers (login): ${user.orgMembers}');
 
-                                      final hasOrganizations =
-                                          user.organizations!.isNotEmpty;
-                                      final hasOrgMembers =
-                                          user.orgMembers!.isNotEmpty;
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Home(),
+                                          ));
 
-                                      if (hasOrganizations && hasOrgMembers) {
-                                        print('satu');
-                                        print(hasOrganizations);
-                                        print(hasOrgMembers);
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Home()));
-                                      } else if (hasOrgMembers &&
-                                          !hasOrganizations) {
-                                        print('dua');
-                                        print(hasOrganizations);
-                                        print(hasOrgMembers);
-                                        // Jika user hanya menjadi anggota organisasi, arahkan ke Unenroll
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Home()));
-                                      } else {
-                                        print('tiga');
-                                        print(hasOrganizations);
-                                        print(hasOrgMembers);
-                                        // Jika user tidak memiliki organisasi dan tidak menjadi anggota, arahkan ke Unenroll
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Unenroll()));
-                                      }
+                                      // final hasOrganizations =
+                                      //     user.organizations!.isNotEmpty;
+                                      // final hasOrgMembers =
+                                      //     user.orgMembers!.isNotEmpty;
+
+                                      // if (hasOrganizations && hasOrgMembers) {
+                                      //   print('satu');
+                                      //   Navigator.pushReplacement(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //           builder: (context) =>
+                                      //               const Home()));
+                                      // } else if (hasOrgMembers &&
+                                      //     !hasOrganizations) {
+                                      //   print('dua');
+                                      //   // Jika user hanya menjadi anggota organisasi, arahkan ke Unenroll
+                                      //   Navigator.pushReplacement(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //           builder: (context) =>
+                                      //               const Home()));
+                                      // } else {
+                                      //   print('tiga');
+                                      //   // Jika user tidak memiliki organisasi dan tidak menjadi anggota, arahkan ke Unenroll
+                                      //   Navigator.pushReplacement(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //           builder: (context) =>
+                                      //               const Unenroll()));
+                                      // }
                                     } else {
                                       print('Login failed');
                                       ScaffoldMessenger.of(context)

@@ -3,8 +3,7 @@ import 'package:dojo/models/org_model.dart';
 import 'package:http/http.dart' as http;
 
 class OrganizationService {
-  final String baseUrl = 'http://192.168.18.248:5000/api';
-  // final String baseUrl = 'http://192.168.100.74:5000/api';
+  final String baseUrl = 'http://localhost:5000/api';
 
   Future<List<Organization>?> fetchOrganizations() async {
     final url = Uri.parse('$baseUrl/organizations');
@@ -36,9 +35,99 @@ class OrganizationService {
         return [];
       }
     } catch (e) {
-      // Tangani error pada jaringan atau lainnya
       print('Terjadi error saat mengambil data organisasi: $e');
       return [];
+    }
+  }
+}
+
+class OrganizationJoinService {
+  final String baseUrl = 'http://localhost:5000/api';
+
+  Future<bool> joinOrganization(int userId, String enrollCode) async {
+    final url = Uri.parse('$baseUrl/join-organization');
+    final body = {
+      "user_id": userId,
+      "enroll_code": enrollCode,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      final responseData = jsonDecode(response.body);
+
+      if (responseData['message'] == 'Successfully joined the organization.') {
+        return true;
+      } else {
+        // Log kesalahan
+        print('Error: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUserData(String userId) async {
+    final response =
+        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
+}
+
+class CreateOrganizationService {
+  final String baseUrl = 'http://localhost:5000/api';
+  Future<bool> createOrganization(
+      String name, String enrollCode, int userId) async {
+    final url = Uri.parse('$baseUrl/organizations');
+    final body = {
+      "name": name,
+      "enroll_code": enrollCode,
+      "user_id": userId,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      final responseData = jsonDecode(response.body);
+
+      if (responseData['message'] == 'Organization created successfully') {
+        return true; // Berhasil enroll
+      } else {
+        // Log kesalahan
+        print('Error: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUserData(String userId) async {
+    final response =
+        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data'];
+    } else {
+      throw Exception('Failed to load user data');
     }
   }
 }

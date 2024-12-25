@@ -1,4 +1,5 @@
 // import 'package:dojo/services/shared_prefs_service.dart';
+import 'package:dojo/login.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,7 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 3), () {
-      navigateBasedOnLoginStatus(context);
+      // navigateBasedOnLoginStatus(context);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Login()));
     });
   }
 

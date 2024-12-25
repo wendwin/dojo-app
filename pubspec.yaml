@@ -63,7 +63,8 @@ flutter:
   assets:
     - assets/images/logo-dojo.png
     - assets/images/element.png
-    - assets/images/element-base.png
+    - assets/images/element-b.png
+    - assets/images/element-t.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
