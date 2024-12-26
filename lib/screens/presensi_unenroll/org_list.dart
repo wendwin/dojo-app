@@ -82,9 +82,11 @@ class _OrganizationListState extends State<OrganizationList> {
               // Text('Gagal Fetch')
               const Center(child: CircularProgressIndicator()),
             ] else if (organizations!.isEmpty) ...[
-              const Text(
-                'No organizations found.',
-                style: TextStyle(color: Colors.white),
+              Center(
+                child: const Text(
+                  'Organisasi belum tersedia!',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ] else ...[
               Expanded(

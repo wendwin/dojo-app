@@ -140,7 +140,7 @@ class _CreateOrganizationState extends State<CreateOrganization> {
                 child: Column(
                   children: [
                     const Text(
-                      'Masukan Kode Enroll',
+                      'Buat Organisasi',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     const SizedBox(height: 15),
@@ -215,7 +215,7 @@ class _CreateOrganizationState extends State<CreateOrganization> {
                           color: Colors.black,
                         )
                       : const Text(
-                          'Gabung',
+                          'Tambah Organisasi',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 16,
