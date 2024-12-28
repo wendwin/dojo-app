@@ -3,7 +3,8 @@ import 'package:dojo/models/org_model.dart';
 import 'package:http/http.dart' as http;
 
 class OrganizationService {
-  final String baseUrl = 'http://localhost:5000/api';
+  // final String baseUrl = 'http://localhost:5000/api';
+  final String baseUrl = 'http://192.168.100.243:5000/api';
 
   Future<List<Organization>?> fetchOrganizations() async {
     final url = Uri.parse('$baseUrl/organizations');
@@ -39,10 +40,58 @@ class OrganizationService {
       return [];
     }
   }
+
+  Future<Map<String, dynamic>?> fetchAttendanceData(String email) async {
+    final url = Uri.parse('$baseUrl/organizations');
+    try {
+      final response =
+          await http.get(url, headers: {'Content-Type': 'application/json'});
+      if (response.statusCode == 200) {
+        print('respon ok');
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          final organizationsData = responseData['data'];
+
+          for (var organization in organizationsData) {
+            final members = organization['member'] as List;
+            bool emailFound = false;
+
+            for (var member in members) {
+              if (member['user']['email'] == email) {
+                emailFound = true;
+                break;
+              }
+            }
+
+            if (emailFound) {
+              return {
+                'attendance_records': organization['attendance_records'],
+                'attendance_sessions': organization['attendance_sessions'],
+              };
+            }
+          }
+
+          print('Email $email tidak ditemukan di dalam member');
+          return null;
+        } else {
+          print('Data organisasi tidak ditemukan');
+          return null;
+        }
+      } else {
+        print('Gagal mengambil data organisasi: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Terjadi kesalahan saat mengambil data absensi: $e');
+      return null;
+    }
+  }
 }
 
 class OrganizationJoinService {
-  final String baseUrl = 'http://localhost:5000/api';
+  // final String baseUrl = 'http://localhost:5000/api';
+  final String baseUrl = 'http://192.168.100.243:5000/api';
 
   Future<bool> joinOrganization(int userId, String enrollCode) async {
     final url = Uri.parse('$baseUrl/join-organization');
@@ -63,7 +112,6 @@ class OrganizationJoinService {
       if (responseData['message'] == 'Successfully joined the organization.') {
         return true;
       } else {
-        // Log kesalahan
         print('Error: ${response.body}');
         return false;
       }
@@ -75,7 +123,9 @@ class OrganizationJoinService {
 
   Future<Map<String, dynamic>> fetchUserData(String userId) async {
     final response =
-        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+        // await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+        await http
+            .get(Uri.parse('http://192.168.100.243:5000/api/users/$userId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -87,7 +137,8 @@ class OrganizationJoinService {
 }
 
 class CreateOrganizationService {
-  final String baseUrl = 'http://localhost:5000/api';
+  // final String baseUrl = 'http://localhost:5000/api';
+  final String baseUrl = 'http://192.168.100.243:5000/api';
   Future<bool> createOrganization(
       String name, String enrollCode, int userId) async {
     final url = Uri.parse('$baseUrl/organizations');
@@ -107,9 +158,8 @@ class CreateOrganizationService {
       final responseData = jsonDecode(response.body);
 
       if (responseData['message'] == 'Organization created successfully') {
-        return true; // Berhasil enroll
+        return true;
       } else {
-        // Log kesalahan
         print('Error: ${response.body}');
         return false;
       }
@@ -121,7 +171,9 @@ class CreateOrganizationService {
 
   Future<Map<String, dynamic>> fetchUserData(String userId) async {
     final response =
-        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+        // await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
+        await http
+            .get(Uri.parse('http://192.168.100.243:5000/api/users/$userId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

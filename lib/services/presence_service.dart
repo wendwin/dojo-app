@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PresenceService {
-  final String baseUrl = 'http://localhost:5000/api/presences';
+  // final String baseUrl = 'http://localhost:5000/api/presences';
+  final String baseUrl = 'http://192.168.100.243:5000/api/add-presences';
 
   Future<Map<String, dynamic>?> createPresence({
     required int userId,
     required int orgId,
+    required String status,
     required String date,
     required String timeOpen,
     required String timeClose,
@@ -25,6 +27,7 @@ class PresenceService {
           'user_id': userId,
           'org_id': orgId,
           'date': date,
+          'status': date,
           'time_open': timeOpen,
           'time_close': timeClose,
         }),

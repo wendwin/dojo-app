@@ -88,6 +88,7 @@ class _CreatePresenceState extends State<CreatePresence> {
           userId: int.parse(_userId!),
           orgId: int.parse(_orgId!),
           date: _selectedDate!,
+          status: 'open',
           timeOpen: '$_openingTime',
           timeClose: '$_closingTime',
           context: context,

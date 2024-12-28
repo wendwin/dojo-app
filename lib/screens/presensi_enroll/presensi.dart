@@ -1,10 +1,11 @@
 import 'package:dojo/screens/presensi_enroll/create_org.dart';
+import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:dojo/services/shared_prefs_service.dart';
 import '../presensi_unenroll/org_list.dart';
 
-class PresensiPage extends StatelessWidget {
+class PresensiPage extends StatefulWidget {
   final Future<String?> userNameFuture;
   final List<dynamic> orgMembers;
   final List<dynamic> organizations;
@@ -16,12 +17,121 @@ class PresensiPage extends StatelessWidget {
       required this.organizations});
 
   @override
+  _PresensiPageState createState() => _PresensiPageState();
+}
+
+class _PresensiPageState extends State<PresensiPage> {
+  String? email;
+  Map<String, dynamic>? attendanceData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchEmailData();
+  }
+
+  void _fetchEmailData() async {
+    final userData = await getUserData();
+    setState(() {
+      email = userData['email'];
+    });
+
+    if (email != null && email!.isNotEmpty) {
+      _fetchAttendanceData(email!);
+    }
+  }
+
+  void _fetchAttendanceData(String email) async {
+    OrganizationService service = OrganizationService();
+    final data = await service.fetchAttendanceData(email);
+    print('fungsi dipanggil');
+    if (data != null) {
+      setState(() {
+        attendanceData = data;
+      });
+    }
+  }
+
+  String? _getLatestDate() {
+    if (attendanceData != null &&
+        attendanceData!['attendance_sessions'] != null &&
+        email != null) {
+      final sessions = attendanceData!['attendance_sessions'] as List;
+
+      if (sessions.isNotEmpty) {
+        // Filter sesi berdasarkan records dengan email pengguna yang sedang login
+        final records = attendanceData!['attendance_records'] as List? ?? [];
+        final userRecords = records.where((record) {
+          final userEmail = record['user']['email'];
+          return userEmail == email;
+        }).toList();
+
+        // Cari sesi terakhir berdasarkan filter ini
+        final latestSession = sessions.last; // Ambil sesi terakhir
+        final sessionDate = latestSession['date'];
+        final sessionStatus = latestSession['status'];
+
+        if (sessionStatus == 'open') {
+          // Jika tidak ada records, kembalikan tanggal sesi terakhir
+          if (userRecords.isEmpty) {
+            return sessionDate;
+          }
+
+          // Cek apakah records memiliki sesi terakhir
+          for (var record in userRecords) {
+            final recordDate = record['attendance_session']['date'];
+            if (recordDate == sessionDate) {
+              return null; // Jika ada record untuk sesi terakhir, tidak tampilkan
+            }
+          }
+
+          return sessionDate; // Jika tidak ada record untuk sesi terakhir
+        }
+      }
+    }
+    return null; // Jika tidak ada sesi
+  }
+
+  List<Widget> _buildAttendanceHistory() {
+    if (attendanceData != null &&
+        attendanceData!['attendance_records'] != null &&
+        email != null) {
+      final records = attendanceData!['attendance_records'] as List;
+
+      // Filter records berdasarkan email pengguna yang sedang login
+      final userRecords = records.where((record) {
+        final userEmail = record['user']['email'];
+        return userEmail == email;
+      }).toList();
+
+      if (userRecords.isNotEmpty) {
+        return userRecords.map((record) {
+          final date = record['attendance_session']['date'];
+          final status = record['status'];
+          return Column(
+            children: [
+              _RiwayatRow(date: date, status: status),
+              const Divider(color: Colors.grey),
+            ],
+          );
+        }).toList();
+      } else {
+        return [
+          Text('Tidak ada riwayat presensi',
+              style: TextStyle(color: Colors.white))
+        ];
+      }
+    }
+    return [Text('Tidak ada riwayat presensi')]; // Jika tidak ada data presensi
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasOrganizations = organizations.isNotEmpty;
-    final hasOrgMembers = orgMembers.isNotEmpty;
+    final hasOrganizations = widget.organizations.isNotEmpty;
+    final hasOrgMembers = widget.orgMembers.isNotEmpty;
 
     return FutureBuilder<String?>(
-      future: userNameFuture,
+      future: widget.userNameFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -34,7 +144,8 @@ class PresensiPage extends StatelessWidget {
           );
         } else {
           final userName = snapshot.data ?? 'Unknown User';
-
+          final latestDate = _getLatestDate();
+          print('attendence data: $attendanceData');
           return Stack(
             children: [
               Positioned(
@@ -110,7 +221,8 @@ class PresensiPage extends StatelessWidget {
                                   children: [
                                     Text(
                                       hasOrganizations
-                                          ? organizations[0]['name'] ?? '-'
+                                          ? widget.organizations[0]['name'] ??
+                                              '-'
                                           : 'Tidak Ada Organisasi',
                                       style: const TextStyle(
                                         color: Colors.white,
@@ -128,7 +240,9 @@ class PresensiPage extends StatelessWidget {
                                     const SizedBox(width: 5),
                                     Text(
                                       hasOrgMembers
-                                          ? orgMembers[0]['user']['role'] ?? '-'
+                                          ? widget.orgMembers[0]['user']
+                                                  ['role'] ??
+                                              '-'
                                           : 'Tidak Ada Role',
                                       style: const TextStyle(
                                         color: Colors.white,
@@ -138,38 +252,40 @@ class PresensiPage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      '20 Oktober 2024',
-                                      style: TextStyle(
-                                        color: Color(0xFFA3EC3D),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                        minimumSize: const Size(60, 35),
-                                        backgroundColor:
-                                            const Color(0xFFA3EC3D),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Baru',
+                                if (latestDate != null) ...[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        latestDate,
                                         style: TextStyle(
-                                          color: Colors.black,
+                                          color: Color(0xFFA3EC3D),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: const Size(60, 35),
+                                          backgroundColor:
+                                              const Color(0xFFA3EC3D),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Baru',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ]
                               ],
                             )
                           : Column(
@@ -250,12 +366,7 @@ class PresensiPage extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 15),
-                                const _RiwayatRow(
-                                    date: '20 Oktober 2024', status: 'Hadir'),
-                                const Divider(color: Colors.grey),
-                                const _RiwayatRow(
-                                    date: '21 Oktober 2024',
-                                    status: 'Tidak Hadir'),
+                                ..._buildAttendanceHistory(),
                               ],
                             )
                           : Column(
