@@ -1,4 +1,5 @@
 import 'package:dojo/screens/presensi_enroll/create_org.dart';
+import 'package:dojo/screens/presensi_enroll/fill_presence.dart';
 import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,37 +60,33 @@ class _PresensiPageState extends State<PresensiPage> {
       final sessions = attendanceData!['attendance_sessions'] as List;
 
       if (sessions.isNotEmpty) {
-        // Filter sesi berdasarkan records dengan email pengguna yang sedang login
         final records = attendanceData!['attendance_records'] as List? ?? [];
         final userRecords = records.where((record) {
           final userEmail = record['user']['email'];
           return userEmail == email;
         }).toList();
 
-        // Cari sesi terakhir berdasarkan filter ini
-        final latestSession = sessions.last; // Ambil sesi terakhir
+        final latestSession = sessions.last;
         final sessionDate = latestSession['date'];
         final sessionStatus = latestSession['status'];
 
         if (sessionStatus == 'open') {
-          // Jika tidak ada records, kembalikan tanggal sesi terakhir
           if (userRecords.isEmpty) {
             return sessionDate;
           }
 
-          // Cek apakah records memiliki sesi terakhir
           for (var record in userRecords) {
             final recordDate = record['attendance_session']['date'];
             if (recordDate == sessionDate) {
-              return null; // Jika ada record untuk sesi terakhir, tidak tampilkan
+              return null;
             }
           }
 
-          return sessionDate; // Jika tidak ada record untuk sesi terakhir
+          return sessionDate;
         }
       }
     }
-    return null; // Jika tidak ada sesi
+    return null;
   }
 
   List<Widget> _buildAttendanceHistory() {
@@ -98,7 +95,6 @@ class _PresensiPageState extends State<PresensiPage> {
         email != null) {
       final records = attendanceData!['attendance_records'] as List;
 
-      // Filter records berdasarkan email pengguna yang sedang login
       final userRecords = records.where((record) {
         final userEmail = record['user']['email'];
         return userEmail == email;
@@ -122,7 +118,7 @@ class _PresensiPageState extends State<PresensiPage> {
         ];
       }
     }
-    return [Text('Tidak ada riwayat presensi')]; // Jika tidak ada data presensi
+    return [Text('Tidak ada riwayat presensi')];
   }
 
   @override
@@ -166,7 +162,6 @@ class _PresensiPageState extends State<PresensiPage> {
                   width: 150,
                 ),
               ),
-              // Main Content
               Container(
                 padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
                 child: Column(
@@ -275,11 +270,21 @@ class _PresensiPageState extends State<PresensiPage> {
                                                 BorderRadius.circular(8),
                                           ),
                                         ),
-                                        child: const Text(
-                                          'Baru',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FillPresence()),
+                                            );
+                                          },
+                                          child: const Text(
+                                            'Baru',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -342,7 +347,6 @@ class _PresensiPageState extends State<PresensiPage> {
                               (!hasOrganizations && hasOrgMembers)
                           ? Column(
                               children: [
-                                // Header
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15),
@@ -430,9 +434,8 @@ class _PresensiPageState extends State<PresensiPage> {
                                               builder: (context) =>
                                                   const OrganizationList()),
                                         );
-                                        // Aksi ketika "Gabung organisasi" diklik
+
                                         print("Gabung organisasi diklik!");
-                                        // Navigator.push(context, MaterialPageRoute(builder: (context) => GabungOrganisasiPage()));
                                       },
                                       child: const Text(
                                         'Gabung organisasi',
@@ -456,9 +459,8 @@ class _PresensiPageState extends State<PresensiPage> {
                                               builder: (context) =>
                                                   const CreateOrganization()),
                                         );
-                                        // Aksi ketika "Buat organisasi" diklik
+
                                         print("Buat organisasi diklik!");
-                                        // Navigator.push(context, MaterialPageRoute(builder: (context) => BuatOrganisasiPage()));
                                       },
                                       child: const Text(
                                         'Buat organisasi',

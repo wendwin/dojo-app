@@ -52,3 +52,38 @@ class PresenceService {
     );
   }
 }
+
+class AttendanceService {
+  final String baseUrl = 'http://192.168.100.243:5000/api/presences';
+
+  Future<Map<String, dynamic>?> submitPresence({
+    required int userId,
+    required int attendanceSessionId,
+    required String status,
+  }) async {
+    final url = Uri.parse('$baseUrl');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    final body = jsonEncode({
+      "user_id": userId,
+      "attendance_session_id": attendanceSessionId,
+      "status": status,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception(
+            'Failed to submit presence. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error submitting presence: $e');
+      return null;
+    }
+  }
+}
