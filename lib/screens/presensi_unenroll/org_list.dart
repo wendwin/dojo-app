@@ -63,7 +63,6 @@ class _OrganizationListState extends State<OrganizationList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: const Text('Kontingen'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_outlined),
           onPressed: () {
@@ -73,7 +72,7 @@ class _OrganizationListState extends State<OrganizationList> {
       ),
       backgroundColor: const Color(0xFF141F33),
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
         color: const Color(0xFF141F33),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,6 +88,13 @@ class _OrganizationListState extends State<OrganizationList> {
                 ),
               ),
             ] else ...[
+              const Center(
+                child: Text(
+                  'Daftar Organisasi',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 20),
               Expanded(
                 child: ListView.builder(
                   padding: EdgeInsets.zero,

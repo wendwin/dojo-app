@@ -112,103 +112,115 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          child: Image.asset(
-            'assets/images/element-t.png',
-            fit: BoxFit.cover,
-            width: 150,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Image.asset(
-            'assets/images/element-b.png',
-            fit: BoxFit.cover,
-            width: 150,
+      ),
+      backgroundColor: const Color(0xFF141F33),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: Image.asset(
+              'assets/images/element-t.png',
+              fit: BoxFit.cover,
+              width: 150,
+            ),
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(30, 80, 30, 30),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(15),
-                width: double.infinity,
-                height: 140,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Masukan Kode Enroll',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    const SizedBox(height: 15),
-                    Form(
-                      key: _formKey,
-                      child: TextFormField(
-                        controller: _enrollCodeController,
-                        decoration: InputDecoration(
-                          hintText: 'Kode enroll',
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          filled: true,
-                          fillColor: const Color.fromARGB(255, 211, 211, 211),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/element-b.png',
+              fit: BoxFit.cover,
+              width: 150,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(30, 80, 30, 30),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(15),
+                  width: double.infinity,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Masukan Kode Enroll',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      const SizedBox(height: 15),
+                      Form(
+                        key: _formKey,
+                        child: TextFormField(
+                          controller: _enrollCodeController,
+                          decoration: InputDecoration(
+                            hintText: 'Kode enroll',
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            filled: true,
+                            fillColor: const Color.fromARGB(255, 211, 211, 211),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Kode enroll tidak boleh kosong';
+                            }
+                            if (value.length < 5) {
+                              return 'Kode enroll harus minimal 5 karakter';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Kode enroll tidak boleh kosong';
-                          }
-                          if (value.length < 5) {
-                            return 'Kode enroll harus minimal 5 karakter';
-                          }
-                          return null;
-                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFA3EC3D),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA3EC3D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(
-                          color: Colors.black,
-                        )
-                      : const Text(
-                          'Gabung',
-                          style: TextStyle(
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
                             color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                          )
+                        : const Text(
+                            'Gabung',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                ),
-              )
-            ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
