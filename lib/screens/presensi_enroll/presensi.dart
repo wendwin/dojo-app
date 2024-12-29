@@ -1,4 +1,5 @@
 import 'package:dojo/screens/presensi_enroll/create_org.dart';
+import 'package:dojo/screens/presensi_enroll/create_presence.dart';
 import 'package:dojo/screens/presensi_enroll/fill_presence.dart';
 import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +22,33 @@ class PresensiPage extends StatefulWidget {
   _PresensiPageState createState() => _PresensiPageState();
 }
 
-class _PresensiPageState extends State<PresensiPage> {
+class _PresensiPageState extends State<PresensiPage>
+    with WidgetsBindingObserver {
   String? email;
   Map<String, dynamic>? attendanceData;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _fetchEmailData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Hapus observer
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Ketika halaman kembali aktif
+      if (email != null) {
+        _fetchAttendanceData(email!);
+      }
+    }
+    super.didChangeAppLifecycleState(state);
   }
 
   void _fetchEmailData() async {
@@ -141,344 +161,372 @@ class _PresensiPageState extends State<PresensiPage> {
         } else {
           final userName = snapshot.data ?? 'Unknown User';
           final latestDate = _getLatestDate();
-          print('attendence data: $attendanceData');
-          return Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Image.asset(
-                  'assets/images/element-t.png',
-                  fit: BoxFit.cover,
-                  width: 150,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Image.asset(
-                  'assets/images/element-b.png',
-                  fit: BoxFit.cover,
-                  width: 150,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
+
+          return Scaffold(
+            backgroundColor: const Color(0xFF141F33),
+            floatingActionButton: (hasOrganizations && hasOrgMembers)
+                ? FloatingActionButton(
+                    onPressed: () {
+                      // Aksi ketika FAB ditekan
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CreatePresence(),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          userName,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
+                      );
+                    },
+                    backgroundColor: Color(0xFFA3EC3D), // Warna FAB
+                    child: const Icon(Icons.add), // Ikon FAB
+                  )
+                : null,
+            body: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Image.asset(
+                    'assets/images/element-t.png',
+                    fit: BoxFit.cover,
+                    width: 150,
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Image.asset(
+                    'assets/images/element-b.png',
+                    fit: BoxFit.cover,
+                    width: 150,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(15),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15),
+                          const SizedBox(width: 10),
+                          Text(
+                            userName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: (hasOrganizations && hasOrgMembers) ||
-                              (!hasOrganizations && hasOrgMembers)
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Presensi',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontFamily:
-                                        GoogleFonts.bebasNeue().fontFamily,
-                                    letterSpacing: 1.5,
+                      const SizedBox(height: 40),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: (hasOrganizations && hasOrgMembers) ||
+                                (!hasOrganizations && hasOrgMembers)
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Presensi',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontFamily:
+                                          GoogleFonts.bebasNeue().fontFamily,
+                                      letterSpacing: 1.5,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      hasOrganizations
-                                          ? widget.organizations[0]['name'] ??
-                                              '-'
-                                          : 'Tidak Ada Organisasi',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Text(
-                                      '|',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      hasOrgMembers
-                                          ? widget.orgMembers[0]['user']
-                                                  ['role'] ??
-                                              '-'
-                                          : 'Tidak Ada Role',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                if (latestDate != null) ...[
+                                  const SizedBox(height: 5),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        latestDate,
-                                        style: TextStyle(
-                                          color: Color(0xFFA3EC3D),
-                                          fontWeight: FontWeight.w500,
+                                        hasOrganizations
+                                            ? widget.organizations[0]['name'] ??
+                                                '-'
+                                            : 'Tidak Ada Organisasi',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
                                         ),
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () {},
-                                        style: ElevatedButton.styleFrom(
-                                          minimumSize: const Size(60, 35),
-                                          backgroundColor:
-                                              const Color(0xFFA3EC3D),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                      const SizedBox(width: 5),
+                                      const Text(
+                                        '|',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        hasOrgMembers
+                                            ? widget.orgMembers[0]['user']
+                                                    ['role'] ??
+                                                '-'
+                                            : 'Tidak Ada Role',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  if (latestDate != null) ...[
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          latestDate,
+                                          style: TextStyle(
+                                            color: Color(0xFFA3EC3D),
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FillPresence()),
-                                            );
-                                          },
-                                          child: const Text(
-                                            'Baru',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w500,
+                                        ElevatedButton(
+                                          onPressed: () {},
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize: const Size(60, 35),
+                                            backgroundColor:
+                                                const Color(0xFFA3EC3D),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              final result =
+                                                  await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FillPresence()),
+                                              );
+                                              if (result == true) {
+                                                // Memuat ulang data jika presensi berhasil dilakukan
+                                                if (email != null) {
+                                                  _fetchAttendanceData(email!);
+                                                }
+                                              }
+                                            },
+                                            child: const Text(
+                                              'Baru',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ]
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                Text('Presensi',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontFamily:
-                                            GoogleFonts.bebasNeue().fontFamily,
-                                        letterSpacing: 1.5)),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Anda belum mengikuti kelas Dojo',
-                                      style:
-                                          TextStyle(color: Colors.yellow[400]),
+                                      ],
                                     ),
-                                    const SizedBox(width: 5),
-                                    Icon(Icons.warning_amber_rounded,
-                                        color: Colors.yellow[400]),
-                                  ],
-                                )
-                              ],
-                            ),
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      children: [
-                        const Icon(Icons.more_time, color: Colors.white),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Riwayat',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            letterSpacing: 1.5,
-                            fontFamily: GoogleFonts.bebasNeue().fontFamily,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(15),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15),
+                                  ]
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Text('Presensi',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontFamily: GoogleFonts.bebasNeue()
+                                              .fontFamily,
+                                          letterSpacing: 1.5)),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Anda belum mengikuti kelas Dojo',
+                                        style: TextStyle(
+                                            color: Colors.yellow[400]),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Icon(Icons.warning_amber_rounded,
+                                          color: Colors.yellow[400]),
+                                    ],
+                                  )
+                                ],
+                              ),
                       ),
-                      child: (hasOrganizations && hasOrgMembers) ||
-                              (!hasOrganizations && hasOrgMembers)
-                          ? Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: double.infinity,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Tanggal',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                      Text('Status',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                ..._buildAttendanceHistory(),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        'Tanggal',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Status',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Belum ada riwayat presensi',
-                                        style: TextStyle(color: Colors.white)),
-                                  ],
-                                ),
-                              ],
+                      const SizedBox(height: 40),
+                      Row(
+                        children: [
+                          const Icon(Icons.more_time, color: Colors.white),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Riwayat',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              letterSpacing: 1.5,
+                              fontFamily: GoogleFonts.bebasNeue().fontFamily,
                             ),
-                    ),
-                    Column(
-                      children: (hasOrganizations && hasOrgMembers) ||
-                              (!hasOrganizations && hasOrgMembers)
-                          ? [
-                              const SizedBox(height: 30),
-                              const Center(
-                                child: Text(
-                                  'Lihat lebih banyak',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: (hasOrganizations && hasOrgMembers) ||
+                                (!hasOrganizations && hasOrgMembers)
+                            ? Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                    width: double.infinity,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Tanggal',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        Text('Status',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15),
+                                  ..._buildAttendanceHistory(),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          'Tanggal',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        Text(
+                                          'Status',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15),
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Belum ada riwayat presensi',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ]
-                          : [
-                              const SizedBox(height: 20),
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const OrganizationList()),
-                                        );
+                      ),
+                      Column(
+                        children: (hasOrganizations && hasOrgMembers) ||
+                                (!hasOrganizations && hasOrgMembers)
+                            ? [
+                                const SizedBox(height: 30),
+                                const Center(
+                                  child: Text(
+                                    'Lihat lebih banyak',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ]
+                            : [
+                                const SizedBox(height: 20),
+                                Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const OrganizationList()),
+                                          );
 
-                                        print("Gabung organisasi diklik!");
-                                      },
-                                      child: const Text(
-                                        'Gabung organisasi',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+                                          print("Gabung organisasi diklik!");
+                                        },
+                                        child: const Text(
+                                          'Gabung organisasi',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Text(
-                                      'atau',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const CreateOrganization()),
-                                        );
+                                      const SizedBox(width: 5),
+                                      const Text(
+                                        'atau',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const CreateOrganization()),
+                                          );
 
-                                        print("Buat organisasi diklik!");
-                                      },
-                                      child: const Text(
-                                        'Buat organisasi',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+                                          print("Buat organisasi diklik!");
+                                        },
+                                        child: const Text(
+                                          'Buat organisasi',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                    )
-                  ],
+                              ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }
       },

@@ -1,6 +1,6 @@
 import 'package:dojo/components/bottom_nav.dart';
 import 'package:dojo/screens/latihan.dart';
-import 'package:dojo/screens/presensi_enroll/create_presence.dart';
+// import 'package:dojo/screens/presensi_enroll/create_presence.dart';
 import 'package:dojo/screens/presensi_enroll/presensi.dart';
 import 'package:dojo/screens/profile.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   ];
 
   late Future<String?> _userNameFuture;
-  String? _roleData;
+  // String? _roleData;
   late Future<Map<String, dynamic>> _orgDataFuture;
   List<dynamic> orgMembers = [];
   List<dynamic> organizations = [];
@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _userNameFuture = _fetchUserName();
     _orgDataFuture = _fetchOrgData();
-    _fetchRoleData();
+    // _fetchRoleData();
   }
 
   Future<String?> _fetchUserName() async {
@@ -40,12 +40,12 @@ class _HomeState extends State<Home> {
     return userData['name'];
   }
 
-  void _fetchRoleData() async {
-    final userData = await getUserData();
-    setState(() {
-      _roleData = userData['role'];
-    });
-  }
+  // void _fetchRoleData() async {
+  //   final userData = await getUserData();
+  //   setState(() {
+  //     _roleData = userData['role'];
+  //   });
+  // }
 
   Future<Map<String, dynamic>> _fetchOrgData() async {
     final userData = await getUserData();
@@ -88,15 +88,15 @@ class _HomeState extends State<Home> {
       child: FutureBuilder<Map<String, dynamic>>(
         future: _orgDataFuture,
         builder: (context, snapshot) {
-          bool hasData = false;
+          // bool hasData = false;
 
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData &&
               snapshot.data != null) {
-            final orgMembers = snapshot.data!['org_members'] as List<dynamic>;
-            final organizations =
-                snapshot.data!['organizations'] as List<dynamic>;
-            hasData = orgMembers.isNotEmpty && organizations.isNotEmpty;
+            // final orgMembers = snapshot.data!['org_members'] as List<dynamic>;
+            // final organizations =
+            snapshot.data!['organizations'] as List<dynamic>;
+            // hasData = orgMembers.isNotEmpty && organizations.isNotEmpty;
           }
 
           return Scaffold(
@@ -170,22 +170,22 @@ class _HomeState extends State<Home> {
                 });
               },
             ),
-            floatingActionButton:
-                ((_currentIndex == 0 && hasData) && _roleData == 'pelatih')
-                    ? FloatingActionButton(
-                        onPressed: () {
-                          // Aksi ketika FAB ditekan
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => (const CreatePresence()),
-                            ),
-                          );
-                        },
-                        backgroundColor: Color(0xFFA3EC3D), // Warna FAB
-                        child: const Icon(Icons.add), // Ikon FAB
-                      )
-                    : null,
+            // floatingActionButton:
+            //     ((_currentIndex == 0 && hasData) && _roleData == 'pelatih')
+            //         ? FloatingActionButton(
+            //             onPressed: () {
+            //               // Aksi ketika FAB ditekan
+            //               Navigator.push(
+            //                 context,
+            //                 MaterialPageRoute(
+            //                   builder: (context) => (const CreatePresence()),
+            //                 ),
+            //               );
+            //             },
+            //             backgroundColor: Color(0xFFA3EC3D), // Warna FAB
+            //             child: const Icon(Icons.add), // Ikon FAB
+            //           )
+            // : null,
           );
         },
       ),

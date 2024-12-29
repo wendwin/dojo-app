@@ -127,7 +127,7 @@ class _FillPresenceState extends State<FillPresence> {
       print('Presensi berhasil: $data');
 
       Future.delayed(const Duration(seconds: 3), () {
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -140,8 +140,62 @@ class _FillPresenceState extends State<FillPresence> {
     }
   }
 
+  Map<String, String?> _getLatestDate() {
+    String? attendanceDate;
+    String? attendanceTimeOpen;
+    String? attendanceTimeClose;
+
+    if (attendanceData != null &&
+        attendanceData!['attendance_sessions'] != null &&
+        email != null) {
+      final sessions = attendanceData!['attendance_sessions'] as List;
+
+      if (sessions.isNotEmpty) {
+        final records = attendanceData!['attendance_records'] as List? ?? [];
+        final userRecords = records.where((record) {
+          final userEmail = record['user']['email'];
+          return userEmail == email;
+        }).toList();
+
+        final latestSession = sessions.last;
+        attendanceDate = latestSession['date'];
+        final sessionStatus = latestSession['status'];
+        attendanceTimeOpen = latestSession['time_open'];
+        attendanceTimeClose = latestSession['time_close'];
+
+        if (sessionStatus == 'open') {
+          if (userRecords.isEmpty) {
+            return {
+              'date': attendanceDate,
+              'time_open': attendanceTimeOpen,
+              'time_close': attendanceTimeClose,
+            };
+          }
+
+          for (var record in userRecords) {
+            final recordDate = record['attendance_session']['date'];
+            if (recordDate == attendanceDate) {
+              return {};
+            }
+          }
+
+          return {
+            'date': attendanceDate,
+            'time_open': attendanceTimeOpen,
+            'time_close': attendanceTimeClose,
+          };
+        }
+      }
+    }
+    return {};
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, String?> latestDate = _getLatestDate();
+    final attendanceDate = latestDate['date'];
+    final attendanceTimeOpen = latestDate['time_open'];
+    final attendanceTimeClose = latestDate['time_close'];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -198,15 +252,15 @@ class _FillPresenceState extends State<FillPresence> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      const Text(
-                        'Minggu, 20 Oktober 2024',
+                      Text(
+                        '$attendanceDate',
                         style: TextStyle(color: Colors.white),
                       ),
                       const SizedBox(height: 10),
                       const Divider(color: Colors.grey),
                       const SizedBox(height: 10),
                       Text(
-                        '08:00 - 09:00 WIB',
+                        '$attendanceTimeOpen - $attendanceTimeClose',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
