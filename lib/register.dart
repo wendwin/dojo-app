@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
-// import 'package:presensi/home.dart';
+
 import 'package:dojo/services/register_service.dart';
 import 'package:dojo/login.dart';
 
 class Register extends StatelessWidget {
   Register({super.key});
-  // String? _roleValue;
 
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  // final List<String> _roles = ['Pelatih', 'Atlet'];
+
   final RegisterService registerService = RegisterService();
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     home: FormRegister(),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,10 +24,8 @@ class Register extends StatelessWidget {
             left: 0,
             right: 0,
             child: Image.asset(
-              'assets/images/element.png', // Ganti dengan path gambar Anda
-              fit: BoxFit.cover, // Mengisi seluruh layar dengan gambar
-              // height: MediaQuery.of(context).size.height *
-              //     0.5, // Menyesuaikan ukuran gambar (hanya setengah layar)
+              'assets/images/element.png',
+              fit: BoxFit.cover,
             ),
           ),
           Center(
@@ -44,33 +35,26 @@ class Register extends StatelessWidget {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center, // Teks "Masuk" di tengah
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Teks "Masuk" di tengah
                     const Text(
                       'Daftar',
                       style: TextStyle(color: Colors.white, fontSize: 24),
                     ),
-                    const SizedBox(height: 30), // Jarak setelah teks "Masuk"
-
-                    // Form Input
+                    const SizedBox(height: 30),
                     Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Label di kiri atas
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Label Email
                         const Text(
                           'Nama',
                           style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 10),
-                        // Input Email
                         TextFormField(
                           controller: _namaController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFCCCCCC), // Warna abu-abu
+                            fillColor: const Color(0xFFCCCCCC),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -89,12 +73,11 @@ class Register extends StatelessWidget {
                           style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 10),
-                        // Input Email
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFCCCCCC), // Warna abu-abu
+                            fillColor: const Color(0xFFCCCCCC),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -109,20 +92,17 @@ class Register extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 20),
-
-                        // Label Password
                         const Text(
                           'Password',
                           style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 10),
-                        // Input Password
                         TextFormField(
                           obscureText: true,
                           controller: _passwordController,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFCCCCCC), // Warna abu-abu
+                            fillColor: const Color(0xFFCCCCCC),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -135,25 +115,6 @@ class Register extends StatelessWidget {
                             return null;
                           },
                         ),
-                        // const SizedBox(height: 20),
-                        // const Text(
-                        //   'Confirm Password',
-                        //   style: TextStyle(color: Colors.white),
-                        // ),
-                        // const SizedBox(height: 10),
-                        // // Input Password
-                        // TextField(
-                        //   obscureText: true,
-                        //   decoration: InputDecoration(
-                        //     filled: true,
-                        //     fillColor: const Color(0xFFCCCCCC), // Warna abu-abu
-                        //     border: OutlineInputBorder(
-                        //       borderRadius: BorderRadius.circular(8),
-                        //       borderSide: BorderSide.none,
-                        //     ),
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 20),
                       ],
                     ),
                     const SizedBox(height: 30),
@@ -180,8 +141,7 @@ class Register extends StatelessWidget {
                                           content: const Row(
                                             children: [
                                               Icon(Icons.check_circle,
-                                                  color: Colors
-                                                      .white), // Ikon di samping teks
+                                                  color: Colors.white),
                                               SizedBox(width: 8),
                                               Text(
                                                 'Pendaftaran Berhasil',
@@ -215,8 +175,7 @@ class Register extends StatelessWidget {
                                           content: const Row(
                                             children: [
                                               Icon(Icons.error,
-                                                  color: Colors
-                                                      .white), // Ikon di samping teks
+                                                  color: Colors.white),
                                               SizedBox(width: 8),
                                               Text(
                                                 'Pendaftaran Gagal',
@@ -264,7 +223,6 @@ class Register extends StatelessWidget {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          // builder: (context) => Register()));
                                           builder: (context) => Login()));
                                 },
                                 child: const Text(' Login',
@@ -277,28 +235,6 @@ class Register extends StatelessWidget {
                               ),
                             ],
                           )
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          //   children: [
-                          //     Text('Belum Punya Akun?',
-                          //         style: TextStyle(color: Colors.white)),
-                          //     GestureDetector(
-                          //       onTap: () {
-                          //         Navigator.push(
-                          //             context,
-                          //             MaterialPageRoute(
-                          //                 builder: (context) => Register()));
-                          //       },
-                          //       child: Text(' Daftar',
-                          //           style: TextStyle(
-                          //               color: const Color.fromARGB(
-                          //                   255, 55, 156, 218))),
-                          //     ),
-                          //     SizedBox(
-                          //       height: 20,
-                          //     ),
-                          //   ],
-                          // )
                         ])
                   ],
                 ),

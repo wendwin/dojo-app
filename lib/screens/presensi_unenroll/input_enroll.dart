@@ -21,7 +21,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _enrollCodeController = TextEditingController();
   final OrganizationJoinService _organizationJoinService =
-      OrganizationJoinService(); // Ganti baseUrl sesuai API Anda
+      OrganizationJoinService();
 
   bool _isLoading = false;
 
@@ -42,7 +42,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Tampilkan indikator loading
+        _isLoading = true;
       });
 
       final enrollCode = _enrollCodeController.text;
@@ -87,7 +87,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
                           userNameFuture: Future.value(userName),
                           orgMembers: updatedUserData['org_members'] ?? [],
                           organizations: updatedUserData['organizations'] ?? [],
-                        ))); // Sesuaikan '/home' dengan route halaman Anda
+                        )));
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -104,7 +104,7 @@ class _InputEnrollPageState extends State<InputEnrollPage> {
         );
       } finally {
         setState(() {
-          _isLoading = false; // Sembunyikan indikator loading
+          _isLoading = false;
         });
       }
     }

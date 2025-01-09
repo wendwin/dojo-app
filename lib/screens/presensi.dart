@@ -36,7 +36,7 @@ class _PresensiPageState extends State<PresensiPage>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this); // Hapus observer
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -167,7 +167,6 @@ class _PresensiPageState extends State<PresensiPage>
             floatingActionButton: (hasOrganizations && hasOrgMembers)
                 ? FloatingActionButton(
                     onPressed: () {
-                      // Aksi ketika FAB ditekan
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -317,7 +316,6 @@ class _PresensiPageState extends State<PresensiPage>
                                                         FillPresence()),
                                               );
                                               if (result == true) {
-                                                // Memuat ulang data jika presensi berhasil dilakukan
                                                 if (email != null) {
                                                   _fetchAttendanceData(email!);
                                                 }

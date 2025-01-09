@@ -34,7 +34,6 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // Refresh data saat aplikasi kembali ke foreground
       _refreshUserData();
     }
   }
@@ -42,14 +41,12 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Jalankan refresh data ketika ada perubahan dependencies
     _refreshUserData();
   }
 
   void _refreshUserData() {
     setState(() {
-      _userDataFuture =
-          getUserData(); // Panggil kembali API atau metode untuk mengambil data
+      _userDataFuture = getUserData();
     });
   }
 

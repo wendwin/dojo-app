@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class PresenceService {
   // final String baseUrl = 'http://localhost:5000/api/presences';
-  final String baseUrl = 'http://192.168.100.243:5000/api/add-presences';
+  final String baseUrl = 'http://localhost:5000/api/add-presences';
 
   Future<Map<String, dynamic>?> createPresence({
     required int userId,
@@ -54,7 +54,7 @@ class PresenceService {
 }
 
 class AttendanceService {
-  final String baseUrl = 'http://192.168.100.243:5000/api/presences';
+  final String baseUrl = 'http://localhost:5000/api/presences';
 
   Future<Map<String, dynamic>?> submitPresence({
     required int userId,

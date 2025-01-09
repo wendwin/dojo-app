@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class OrganizationService {
   // final String baseUrl = 'http://localhost:5000/api';
-  final String baseUrl = 'http://192.168.100.243:5000/api';
+  final String baseUrl = 'http://localhost:5000/api';
 
   Future<List<Organization>?> fetchOrganizations() async {
     final url = Uri.parse('$baseUrl/organizations');
@@ -91,7 +91,7 @@ class OrganizationService {
 
 class OrganizationJoinService {
   // final String baseUrl = 'http://localhost:5000/api';
-  final String baseUrl = 'http://192.168.100.243:5000/api';
+  final String baseUrl = 'http://localhost:5000/api';
 
   Future<bool> joinOrganization(int userId, String enrollCode) async {
     final url = Uri.parse('$baseUrl/join-organization');
@@ -124,8 +124,7 @@ class OrganizationJoinService {
   Future<Map<String, dynamic>> fetchUserData(String userId) async {
     final response =
         // await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
-        await http
-            .get(Uri.parse('http://192.168.100.243:5000/api/users/$userId'));
+        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -138,7 +137,7 @@ class OrganizationJoinService {
 
 class CreateOrganizationService {
   // final String baseUrl = 'http://localhost:5000/api';
-  final String baseUrl = 'http://192.168.100.243:5000/api';
+  final String baseUrl = 'http://localhost:5000/api';
   Future<bool> createOrganization(
       String name, String enrollCode, int userId) async {
     final url = Uri.parse('$baseUrl/organizations');
@@ -171,9 +170,7 @@ class CreateOrganizationService {
 
   Future<Map<String, dynamic>> fetchUserData(String userId) async {
     final response =
-        // await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
-        await http
-            .get(Uri.parse('http://192.168.100.243:5000/api/users/$userId'));
+        await http.get(Uri.parse('http://localhost:5000/api/users/$userId'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -185,7 +182,7 @@ class CreateOrganizationService {
 }
 
 class UserProfileService {
-  final String baseUrl = 'http://192.168.100.243:5000/api';
+  final String baseUrl = 'http://localhost:5000/api';
 
   Future<Map<String, dynamic>?> fetchUserProfile(int userId) async {
     final url = Uri.parse('$baseUrl/users/$userId');

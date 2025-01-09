@@ -13,14 +13,6 @@ Future<bool> checkLoginStatus() async {
   return prefs.getBool('isLoggedIn') ?? false;
 }
 
-// Future<void> logoutUser() async {
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   await prefs.remove('userId');
-//   await prefs.remove('userName');
-//   await prefs.remove('isLoggedIn');
-//   print('Logout successful: User data cleared:');
-// }
-
 Future<void> logoutUser() async {
   final prefs = await SharedPreferences.getInstance();
 
@@ -35,19 +27,6 @@ Future<void> logoutUser() async {
 
   print('Logout successful: User data cleared');
 }
-
-// Future<void> saveUserData(String userId, String userName, String token) async {
-//   if (token.isEmpty) {
-//     print('Token is empty, not saving user data.');
-//     return;
-//   }
-
-//   final prefs = await SharedPreferences.getInstance();
-//   await prefs.setString('userId', userId);
-//   await prefs.setString('userName', userName);
-//   await prefs.setString('token', token);
-//   print("User data saved: userId=$userId, userName=$userName, token=$token");
-// }
 
 Future<void> saveUserData(Map<String, dynamic> userData, String token) async {
   final prefs = await SharedPreferences.getInstance();
@@ -112,23 +91,3 @@ Future<String?> getUserOrganization() async {
   print('Get organization (shared): $org');
   return org;
 }
-
-// Future<void> logoutUser() async {
-//   final prefs = await SharedPreferences.getInstance();
-//   await prefs.remove('userId');
-//   await prefs.remove('userName');
-//   print("User data cleared: userId and userName have been removed.");
-// }
-
-// Future<Map<String, String>> getUserData() async {
-//   final prefs = await SharedPreferences.getInstance();
-//   final userId = prefs.getString('userId') ?? '';
-//   final userName = prefs.getString('userName') ?? '';
-//   return {'userId': userId, 'userName': userName};
-// }
-
-// Future<void> clearUserData() async {
-//   final prefs = await SharedPreferences.getInstance();
-//   await prefs.remove('user_name');
-//   print("User data cleared");
-// }
