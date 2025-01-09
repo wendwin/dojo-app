@@ -4,37 +4,69 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:dojo/models/org_model.dart';
 
-class ProfilePage extends StatelessWidget {
-  // final List<Organization>? organizations;
+class ProfilePage extends StatefulWidget {
   final List<dynamic> orgMembers;
   final List<dynamic> organizations;
-
   const ProfilePage(
       {super.key, required this.orgMembers, required this.organizations});
 
-  Future<Map<String, dynamic>> _getUserData() async {
-    return await getUserData();
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
+  late Future<Map<String, dynamic>> _userDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshUserData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Refresh data saat aplikasi kembali ke foreground
+      _refreshUserData();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Jalankan refresh data ketika ada perubahan dependencies
+    _refreshUserData();
+  }
+
+  void _refreshUserData() {
+    setState(() {
+      _userDataFuture =
+          getUserData(); // Panggil kembali API atau metode untuk mengambil data
+    });
   }
 
   Future<void> _logoutUser(BuildContext context) async {
     await logoutUser();
-    // Hapus semua rute sebelumnya dan arahkan ke halaman login
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => Login()),
-      (route) => false, // Menghapus semua rute sebelumnya
+      (route) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // bool hasOrgOrMembership = orgMembers.isNotEmpty && organizations.isNotEmpty;
-    // final hasOrganizations = organizations.isNotEmpty;
-    // final hasOrgMembers = orgMembers.isNotEmpty;
-
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
-        future: _getUserData(),
+        future: _userDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -140,44 +172,44 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            if (!hasOrganizations && !hasOrgMembers)
+            if (hasOrganizations && hasOrgMembers)
               // Jika orgMembers dan organizations kosong, tampilkan tombol
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Arahkan ke halaman buat organisasi
-                      print("Navigate to Create Organization");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA3EC3D),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 10),
-                    ),
-                    child: const Text(
-                      'Buat Organisasi',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Arahkan ke halaman join organisasi
-                      print("Navigate to Join Organization");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA3EC3D),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 10),
-                    ),
-                    child: const Text(
-                      'Gabung Organisasi',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ],
-              )
-            else
+              //   Column(
+              //     children: [
+              //       ElevatedButton(
+              //         onPressed: () {
+              //           // Arahkan ke halaman buat organisasi
+              //           print("Navigate to Create Organization");
+              //         },
+              //         style: ElevatedButton.styleFrom(
+              //           backgroundColor: const Color(0xFFA3EC3D),
+              //           padding: const EdgeInsets.symmetric(
+              //               horizontal: 30, vertical: 10),
+              //         ),
+              //         child: const Text(
+              //           'Buat Organisasi',
+              //           style: TextStyle(color: Colors.black),
+              //         ),
+              //       ),
+              //       const SizedBox(height: 10),
+              //       ElevatedButton(
+              //         onPressed: () {
+              //           // Arahkan ke halaman join organisasi
+              //           print("Navigate to Join Organization");
+              //         },
+              //         style: ElevatedButton.styleFrom(
+              //           backgroundColor: const Color(0xFFA3EC3D),
+              //           padding: const EdgeInsets.symmetric(
+              //               horizontal: 30, vertical: 10),
+              //         ),
+              //         child: const Text(
+              //           'Gabung Organisasi',
+              //           style: TextStyle(color: Colors.black),
+              //         ),
+              //       ),
+              //     ],
+              //   )
+              // else
               // Jika orgMembers atau organizations tidak kosong, tampilkan kontainer
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -192,11 +224,17 @@ class ProfilePage extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => DetailPage()),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailPage(data: orgMembers)),
                         );
                       },
-                      child: const _RiwayatRow(
-                          date: 'Dojo', status: 'Satria Monoreh'),
+                      child: _RiwayatRow(
+                        date: 'Dojo',
+                        status: organizations.isNotEmpty
+                            ? organizations[0]['name'] ?? 'Tidak ada organisasi'
+                            : 'Tidak ada organisasi',
+                      ),
                     ),
                     const Divider(color: Colors.grey, thickness: 2),
                     const _RiwayatRow(date: 'Anggota', status: 'Alex Supriadi'),
@@ -221,20 +259,20 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Container(
-                child: Column(
-              children: [
-                Text(
-                  'Organizations: ${organizations.length}',
-                  style: TextStyle(color: Colors.white),
-                ), // Menampilkan jumlah organisasi
-                // Tampilkan orgMembers jika diperlukan
-                Text(
-                  'Org Members: ${orgMembers.length}',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
-            ))
+            // Container(
+            //     child: Column(
+            //   children: [
+            //     Text(
+            //       'Organizations: ${organizations.length}',
+            //       style: TextStyle(color: Colors.white),
+            //     ), // Menampilkan jumlah organisasi
+            //     // Tampilkan orgMembers jika diperlukan
+            //     Text(
+            //       'Org Members: ${orgMembers.length}',
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   ],
+            // ))
           ],
         ),
       ]),
@@ -296,7 +334,7 @@ class _RiwayatRow extends StatelessWidget {
 }
 
 class DetailPage extends StatelessWidget {
-  const DetailPage({super.key});
+  const DetailPage({super.key, required List data});
 
   @override
   Widget build(BuildContext context) {

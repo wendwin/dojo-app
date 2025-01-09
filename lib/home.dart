@@ -1,7 +1,7 @@
 import 'package:dojo/components/bottom_nav.dart';
 import 'package:dojo/screens/latihan.dart';
 // import 'package:dojo/screens/presensi_enroll/create_presence.dart';
-import 'package:dojo/screens/presensi_enroll/presensi.dart';
+import 'package:dojo/screens/presensi.dart';
 import 'package:dojo/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
@@ -132,7 +132,34 @@ class _HomeState extends State<Home> {
                     },
                   ),
                 ),
-                _buildNavigator(1, const LatihanPage()),
+                _buildNavigator(
+                  1,
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: _orgDataFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else if (snapshot.hasData) {
+                        final orgMembers =
+                            snapshot.data!['org_members'] as List<dynamic>;
+                        final organizations =
+                            snapshot.data!['organizations'] as List<dynamic>;
+
+                        return LatihanPage(
+                          userNameFuture: _userNameFuture,
+                          orgMembers: orgMembers,
+                          organizations: organizations,
+                        );
+                      } else {
+                        return const Center(child: Text('No data found.'));
+                      }
+                    },
+                  ),
+                ),
                 _buildNavigator(
                   2,
                   FutureBuilder<Map<String, dynamic>>(

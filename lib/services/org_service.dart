@@ -183,3 +183,40 @@ class CreateOrganizationService {
     }
   }
 }
+
+class UserProfileService {
+  final String baseUrl = 'http://192.168.100.243:5000/api';
+
+  Future<Map<String, dynamic>?> fetchUserProfile(int userId) async {
+    final url = Uri.parse('$baseUrl/users/$userId');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+          if (responseData.containsKey('data')) {
+            return responseData['data'];
+          } else {
+            print('Key "data" tidak ditemukan');
+            return null;
+          }
+        } else {
+          print('Response body kosong');
+          return null;
+        }
+      } else {
+        print('Gagal mengambil profil pengguna: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Terjadi error saat mengambil data profil pengguna: $e');
+      return null;
+    }
+  }
+}

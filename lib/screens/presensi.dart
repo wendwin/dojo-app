@@ -5,7 +5,7 @@ import 'package:dojo/services/org_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
-import '../presensi_unenroll/org_list.dart';
+import 'presensi_unenroll/org_list.dart';
 
 class PresensiPage extends StatefulWidget {
   final Future<String?> userNameFuture;
@@ -255,7 +255,7 @@ class _PresensiPageState extends State<PresensiPage>
                                         hasOrganizations
                                             ? widget.organizations[0]['name'] ??
                                                 '-'
-                                            : 'Tidak Ada Organisasi',
+                                            : 'Nama Organisasi',
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,

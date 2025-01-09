@@ -1,4 +1,4 @@
-import 'package:dojo/screens/presensi_enroll/presensi.dart';
+import 'package:dojo/screens/presensi.dart';
 import 'package:dojo/services/org_service.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';

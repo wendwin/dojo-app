@@ -234,7 +234,7 @@ class _FillPresenceState extends State<FillPresence> {
                 Container(
                   padding: const EdgeInsets.all(15),
                   width: double.infinity,
-                  height: 280,
+                  height: 320,
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(15),

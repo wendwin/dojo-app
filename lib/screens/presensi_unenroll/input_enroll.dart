@@ -1,5 +1,5 @@
 import 'package:dojo/models/org_model.dart';
-import 'package:dojo/screens/presensi_enroll/presensi.dart';
+import 'package:dojo/screens/presensi.dart';
 // import 'package:dojo/screens/presensi_enroll/presensi.dart';
 import 'package:dojo/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
